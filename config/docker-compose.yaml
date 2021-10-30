@@ -1,0 +1,43 @@
+version: '3'
+services:
+  nginx:
+    image: nginx
+    volumes:
+      - "./nginx.conf:/etc/nginx/nginx.conf"
+      - "/etc/letsencrypt/live/amuel.duckdns.org/fullchain.pem:/etc/letsencrypt/live/amuel.duckdns.org/fullchain.pem"
+      - "/etc/letsencrypt/live/amuel.duckdns.org/privkey.pem:/etc/letsencrypt/live/amuel.duckdns.org/privkey.pem"
+      - "/var/log/nginx"
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - oauth-proxy
+
+  oauth-proxy:    
+    image: quay.io/oauth2-proxy/oauth2-proxy:latest-armv6
+    command: --config /oauth2-proxy.cfg
+    volumes:
+      - "./oauth2-proxy.cfg:/oauth2-proxy.cfg"
+    environment:
+      - OAUTH2_PROXY_CLIENT_SECRET
+      - OAUTH2_PROXY_CLIENT_ID
+      - OAUTH2_PROXY_COOKIE_SECRET
+    depends_on:
+      - nginx-internal
+
+  nginx-internal:
+    image: nginx
+    volumes:
+      - "./nginx-internal.conf:/etc/nginx/nginx.conf"
+      - "./index-internal.html:/usr/share/nginx/html/index.html"
+      - "/var/log/nginx"
+    ports:
+      - "8090:8090"
+    depends_on:
+      - domoticz
+
+  domoticz:
+    image: domoticz/domoticz
+    ports:
+      - "8080:8080"
+
