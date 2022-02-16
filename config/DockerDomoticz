@@ -1,0 +1,7 @@
+FROM domoticz/domoticz
+
+RUN apt-get update
+RUN apt-get install -y build-essential
+RUN pip3 install RPi.GPIO
+
+CMD ["/opt/domoticz/domoticz"]

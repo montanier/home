@@ -37,7 +37,12 @@ services:
       - domoticz
 
   domoticz:
-    image: domoticz/domoticz
+    build:
+      context: .
+      dockerfile: DockerDomoticz
+    privileged: true
+    volumes:
+      - "../../config-domoticz/:/opt/domoticz/userdata/"
     ports:
       - "8080:8080"
 
