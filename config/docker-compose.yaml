@@ -7,11 +7,18 @@ services:
       - "/etc/letsencrypt/live/amuel.duckdns.org/fullchain.pem:/etc/letsencrypt/live/amuel.duckdns.org/fullchain.pem"
       - "/etc/letsencrypt/live/amuel.duckdns.org/privkey.pem:/etc/letsencrypt/live/amuel.duckdns.org/privkey.pem"
       - "/var/log/nginx"
+      - "./certbot/www:/var/www/certbot/:ro"
     ports:
       - "80:80"
       - "443:443"
     depends_on:
       - oauth-proxy
+
+  certbot:
+    image: certbot/certbot:arm32v6-latest
+    volumes: 
+      - "./certbot/www/:/var/www/certbot/:rw"
+      - "./certbot/conf/:/etc/letsencrypt/:rw"
 
   oauth-proxy:    
     image: quay.io/oauth2-proxy/oauth2-proxy:latest-armv6
